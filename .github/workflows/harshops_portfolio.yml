@@ -6,6 +6,7 @@ on:
     workflow_dispatch:
 
 permissions:
+    contents: read
     pages: write
     id-token: write
 
@@ -26,22 +27,24 @@ jobs:
               uses: actions/setup-node@v4
               with:
                 node-version: 18
+                cache: 'npm'
 
-            # Install npm
+            - name: Setup the github pages
+              uses: actions/configure-pages@v4
+
+            # Install dependencies
             - name: Install dependencies
-              run: npm install gsap
+              run: npm ci
 
             # Build portfolio
             - name: Build portfolio
               run: npm run build
-                                
-            - name: Setup the github pages
-              uses: actions/configure-pages@v4
-
+            
             - name: upload static files
               uses: actions/upload-pages-artifact@v4
               with:
                 path: ./dist
 
             - name: Deploy to GitHub Pages
+              id: deployment
               uses: actions/deploy-pages@v4
